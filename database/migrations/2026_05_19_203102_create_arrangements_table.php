@@ -13,6 +13,13 @@ return new class extends Migration
     {
         Schema::create('arrangements', function (Blueprint $table) {
             $table->id();
+            $table->string('title');
+            $table->string('destination');
+            $table->decimal('price', 10, 2);
+            $table->integer('duration_days');
+            $table->text('description')->nullable();
+            $table->integer('discount_percent')->default(0);
+            $table->boolean('is_last_minute')->default(false);
             $table->timestamps();
         });
     }
