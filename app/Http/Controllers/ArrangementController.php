@@ -26,6 +26,10 @@ class ArrangementController extends Controller
         return response()->json($arrangement);
     }
 
+    public function show($id){
+        return Arrangement::findOrFail($id);
+    }
+
     public function update(Request $request, $id)
     {
         $arrangement = Arrangement::find($id);
@@ -56,4 +60,5 @@ class ArrangementController extends Controller
         ]);
 
     }
+
 }
