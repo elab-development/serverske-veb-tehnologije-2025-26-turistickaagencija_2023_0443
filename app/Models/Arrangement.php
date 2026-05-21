@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Booking;
 
 class Arrangement extends Model
 {
@@ -15,4 +16,8 @@ class Arrangement extends Model
         'discount_percent',
         'is_last_minute',
     ];
+
+    public function bookings(){
+        return $this->hasMany(Booking::class);
+    }
 }
