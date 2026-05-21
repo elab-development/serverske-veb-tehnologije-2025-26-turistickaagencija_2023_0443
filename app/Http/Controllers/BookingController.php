@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Booking;
+use Illuminate\Support\Facades\Validator;
 
 class BookingController extends Controller
 {
@@ -12,11 +13,34 @@ class BookingController extends Controller
     }
 
     public function store(Request $request){
+        $validator = Validator::make($request->all(),[
+            'arrangement_id' => 'required|exists:arrangements,id',
+            'number_of_people' => 'required|integer|min:1',
+            'travel_date' => 'required|date|after_or_equal:today',
+        ]);
+
+        if($validator->fails()){
+            return response()->json([
+                'errors' => $validator->errors()
+            ], 422);
+        };
+
+        $arrangement = \App\Models\Arrangement::findOrFail($request->arrangement_id);
+
+        $totalPrice = $arrangement->price;
+
+        if($arrangement->discount_percent > 0){
+            $totalPrice -= $totalPrice * ($arrangement->discount_percent / 100);
+        }
+
+        $totalPrice *= $request->number_of_people;
+        $totalPrice = ceil($totalPrice);
+
         $booking = Booking::create([
             'user_id' => $request->user()->id,
             'arrangement_id' => $request->arrangement_id,
             'number_of_people' => $request->number_of_people,
-            'total_price' => $request->total_price,
+            'total_price' => $totalPrice,
             'travel_date' => $request->travel_date,
             'status' => 'pending'
         ]);
@@ -36,6 +60,18 @@ class BookingController extends Controller
                 'message' => 'Booking not found'
             ], 404);
         }
+
+        $validator = Validator::make($request->all(),[
+            'arrangement_id' => 'sometimes|exists:arrangements,id',
+            'number_of_people' => 'sometimes|integer|min:1',
+            'travel_date' => 'sometimes|date|after_or_equal:today',
+        ]);
+
+        if($validator->fails()){
+            return response()->json([
+                'errors' => $validator->errors()
+            ], 422);
+        };
 
         $booking->update($request->all());
         return response()->json($booking);
