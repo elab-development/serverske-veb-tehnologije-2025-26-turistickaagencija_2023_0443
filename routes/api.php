@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ArrangementController;
 use Illuminate\Http\Request;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BookingController;
 
 /*Route::get('/arrangements', [ArrangementController::class, 'index']);
 Route::post('/arrangements', [ArrangementController::class, 'store']);
@@ -23,5 +24,7 @@ Route::middleware('auth:sanctum')->group(function (){
     });
 
     Route::apiResource('arrangements', ArrangementController::class);
+
+    Route::apiResource('bookings', BookingController::class);
 });
 
