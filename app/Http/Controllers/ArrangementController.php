@@ -44,6 +44,14 @@ class ArrangementController extends Controller
     }
 
     public function show($id){
+        $arrangement = Arrangement::find($id);
+
+        if(!$arrangement){
+            return response()->json([
+                'message' => 'Arrangement not found'
+            ], 404);
+        }
+
         return Arrangement::findOrFail($id);
     }
 

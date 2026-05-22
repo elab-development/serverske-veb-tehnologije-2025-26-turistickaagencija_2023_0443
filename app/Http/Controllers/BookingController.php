@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Validator;
 class BookingController extends Controller
 {
     public function index(){
-        return response()->json(Booking::all());
+        return response()->json(Booking::with(['user','arrangement'])->get());
     }
 
     public function store(Request $request){
@@ -49,7 +49,15 @@ class BookingController extends Controller
     }
 
     public function show($id){
-        return Booking::findOrFail($id);
+         $booking = Booking::find($id);
+
+        if(!$booking){
+            return response()->json([
+                'message' => 'Booking not found'
+            ], 404);
+        }
+
+        return Booking::with(['user','arrangement'])->findOrFail($id);
     }
 
     public function update(Request $request, $id){

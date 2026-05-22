@@ -5,13 +5,7 @@ use App\Http\Controllers\ArrangementController;
 use Illuminate\Http\Request;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookingController;
-
-/*Route::get('/arrangements', [ArrangementController::class, 'index']);
-Route::post('/arrangements', [ArrangementController::class, 'store']);
-Route::put('/arrangements/{id}', [ArrangementController::class, 'update']);
-Route::delete('/arrangements/{id}', [ArrangementController::class, 'destroy']);*/
-
-
+use App\Http\Controllers\ReviewController;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -26,5 +20,7 @@ Route::middleware('auth:sanctum')->group(function (){
     Route::apiResource('arrangements', ArrangementController::class);
 
     Route::apiResource('bookings', BookingController::class);
+
+    Route::apiResource('reviews', ReviewController::class);
 });
 

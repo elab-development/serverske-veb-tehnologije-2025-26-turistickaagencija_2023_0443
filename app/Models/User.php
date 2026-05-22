@@ -9,6 +9,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use App\Models\Booking;
+use App\Models\Review;
 
 class User extends Authenticatable
 {
@@ -51,5 +52,9 @@ class User extends Authenticatable
 
     public function bookings(){
         return $this->hasMany(Booking::class);
+    }
+
+    public function reviews(){
+        return $this->hasMany(Review::class);
     }
 }
