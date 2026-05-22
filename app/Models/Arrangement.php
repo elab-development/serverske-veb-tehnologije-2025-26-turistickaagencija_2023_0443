@@ -22,6 +22,10 @@ class Arrangement extends Model
         'is_last_minute',
     ];
 
+    protected $casts = [
+        'is_last_minute' => 'boolean',
+    ];
+
     public function bookings(){
         return $this->hasMany(Booking::class);
     }

@@ -8,9 +8,19 @@ use Illuminate\Support\Facades\Validator;
 
 class ArrangementController extends Controller
 {
-    public function index()
+    public function index(Request $request) 
     {
-        return response()->json(Arrangement::all());    
+        $query = Arrangement::query();
+
+        if ($request->filled('last_minute')) {
+            $query->where('is_last_minute', (int) $request->last_minute);
+        }
+
+        if ($request->filled('destination')){
+            $query->where('destination', 'like', '%' . $request->destination . '%');
+        }
+
+        return response()->json($query->get());
     }
 
     public function store(Request $request)
@@ -22,7 +32,7 @@ class ArrangementController extends Controller
             'duration_days' => 'required|integer|min:1',
             'description' => 'nullable|string',
             'discount_percent' => 'nullable|integer|min:0|max:100',
-            'is_last_minute' => 'boolean',
+            'is_last_minute' => 'nullable|in:0,1',
         ]);
 
         if($validator->fails()){
@@ -70,7 +80,8 @@ class ArrangementController extends Controller
             'destination' => 'sometimes|string|max:255',
             'price' => 'sometimes|numeric|min:0',
             'duration_days' => 'sometimes|integer|min:1',
-            'discount_percent' => 'sometimes|integer|min:0|max:100'
+            'discount_percent' => 'sometimes|integer|min:0|max:100',
+            'is_last_minute' => 'sometimes|boolean',
         ]);
 
         if($validator->fails()){
@@ -107,5 +118,4 @@ class ArrangementController extends Controller
         ]);
 
     }
-
 }
