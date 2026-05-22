@@ -79,7 +79,15 @@ class ArrangementController extends Controller
             ], 422);
         }
 
-        $arrangement->update($request->all());
+        $arrangement->update([
+            'title' => $request->title ?? $arrangement->title,
+            'destination' => $request->destination ?? $arrangement->destination,
+            'price' => $request->price ?? $arrangement->price,
+            'duration_days' => $request->duration_days ?? $arrangement->duration_days,
+            'description' => $request->description ?? $arrangement->description,
+            'discount_percent' => $request->discount_percent ?? $arrangement->discount_percent,
+            'is_last_minute' => $request->is_last_minute ?? $arrangement->is_last_minute,
+        ]);
         return response()->json($arrangement);
     }
 

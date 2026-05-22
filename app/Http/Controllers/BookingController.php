@@ -41,8 +41,7 @@ class BookingController extends Controller
             'arrangement_id' => $request->arrangement_id,
             'number_of_people' => $request->number_of_people,
             'total_price' => $totalPrice,
-            'travel_date' => $request->travel_date,
-            'status' => 'pending'
+            'travel_date' => $request->travel_date
         ]);
 
         return response()->json($booking);
@@ -81,7 +80,23 @@ class BookingController extends Controller
             ], 422);
         };
 
-        $booking->update($request->all());
+        $arrangement = $booking->arrangement;
+
+        $totalPrice = $arrangement->price;
+
+        if($arrangement->discount_percent > 0){
+            $totalPrice -= $totalPrice * ($arrangement->discount_percent / 100);
+        }
+
+        $totalPrice *= $request->number_of_people;
+        $totalPrice = ceil($totalPrice);
+
+        $booking->update([
+            'arrangement_id' => $request->arrangement_id ?? $booking->arrangement_id,
+            'number_of_people' => $request->number_of_people ?? $booking->number_of_people,
+            'travel_date' => $request->travel_date ?? $booking->travel_date,
+            'total_price' => $totalPrice
+        ]);
         return response()->json($booking);
     }
 

@@ -73,7 +73,10 @@ class ReviewController extends Controller
             ],422);
         }  
 
-        $review->update($request->all());
+        $review->update([
+            'rating' => $request->rating ?? $review->rating,
+            'comment' => $request->comment ?? $review->comment,
+        ]);
         return response()->json($review);
     }
 

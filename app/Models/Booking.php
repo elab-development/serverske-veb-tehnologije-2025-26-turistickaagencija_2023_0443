@@ -14,8 +14,7 @@ class Booking extends Model
         'arrangement_id',
         'number_of_people',
         'total_price',
-        'travel_date',
-        'status'
+        'travel_date'
     ];
 
     public function user(){
