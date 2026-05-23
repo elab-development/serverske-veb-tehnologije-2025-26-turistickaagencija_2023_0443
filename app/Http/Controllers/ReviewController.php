@@ -29,6 +29,16 @@ class ReviewController extends Controller
             ],422);
         }
 
+        $existingReview = Review::where('user_id', $request->user()->id)
+            ->where('arrangement_id', $request->arrangement_id)
+            ->first();
+
+        if($existingReview){
+            return response()->json([
+                'message' => 'You already reviewed this arrangement'
+            ], 409);
+        }
+
         $review = Review::create([
             'user_id' => $request->user()->id,
             'arrangement_id' => $request->arrangement_id,
