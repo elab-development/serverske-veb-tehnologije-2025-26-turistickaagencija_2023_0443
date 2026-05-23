@@ -5,14 +5,19 @@ namespace App\Http\Controllers;
 use App\Models\Review;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Resources\ReviewResource;
 
 class ReviewController extends Controller
 {
     public function index()
     {
-        return response()->json(
-            Review::with(['user','arrangement'])->get()
-        );
+        $paged = Review::with(['user','arrangement'])->paginate(5);
+
+        return response()->json([
+            'current_page'=> $paged->currentPage(),
+            'data' => ReviewResource::collection($paged->items()),
+            'total_pages' => $paged->lastPage(),
+        ]);
     }
 
     public function store(Request $request)

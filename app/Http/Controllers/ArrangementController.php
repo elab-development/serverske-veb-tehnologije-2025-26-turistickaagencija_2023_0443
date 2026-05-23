@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Arrangement;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Resources\ArrangementResource;
 
 class ArrangementController extends Controller
 {
@@ -43,10 +44,10 @@ class ArrangementController extends Controller
             }
         }
 
-        $paged = $query->paginate(2);
+        $paged = $query->paginate(5);
         return response()->json([
             'current_page' =>$paged->currentPage(),
-            'data' => $paged->items(),
+            'data' => ArrangementResource::collection($paged->items()),
             'total_pages' => $paged->lastPage()
         ]);
     }

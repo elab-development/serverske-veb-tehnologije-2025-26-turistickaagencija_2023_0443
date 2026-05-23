@@ -5,11 +5,18 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Booking;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Resources\BookingResource;
 
 class BookingController extends Controller
 {
     public function index(){
-        return response()->json(Booking::with(['user','arrangement'])->get());
+        $paged = Booking::with(['user','arrangement'])->paginate(5);
+
+        return response()->json([
+            'current_page'=> $paged->currentPage(),
+            'data' => BookingResource::collection($paged->items()),
+            'total_pages' => $paged->lastPage(),
+        ]);
     }
 
     public function store(Request $request){
