@@ -21,10 +21,28 @@ Route::middleware('auth:sanctum')->group(function (){
 
     Route::put('/change-password', [AuthController::class, 'changePassword']);
     
-    Route::apiResource('arrangements', ArrangementController::class);
+    Route::apiResource('arrangements', ArrangementController::class)
+        ->only(['index', 'show']);
+    Route::delete('/arrangements/{id}', [ArrangementController::class, 'destroy'])
+        ->middleware('role:admin');
+    Route::apiResource('arrangements', ArrangementController::class)
+        ->only(['store','update'])
+        ->middleware('role:admin,manager');
 
-    Route::apiResource('bookings', BookingController::class);
+    Route::apiResource('bookings', BookingController::class)
+        ->only(['index', 'show']);
+    Route::delete('/bookings/{id}', [BookingController::class, 'destroy'])
+        ->middleware('role:admin');
+    Route::apiResource('bookings', BookingController::class)
+        ->only(['store','update'])
+        ->middleware('role:admin,manager');
 
-    Route::apiResource('reviews', ReviewController::class);
+    Route::apiResource('reviews', ReviewController::class)
+        ->only(['index', 'show']);
+    Route::delete('/reviews/{id}', [ReviewController::class, 'destroy'])
+        ->middleware('role:admin');
+    Route::apiResource('reviews', ReviewController::class)
+        ->only(['store','update'])
+        ->middleware('role:admin,manager');
 });
 
