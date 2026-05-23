@@ -43,7 +43,12 @@ class ArrangementController extends Controller
             }
         }
 
-        return response()->json($query->get());
+        $paged = $query->paginate(2);
+        return response()->json([
+            'current_page' =>$paged->currentPage(),
+            'data' => $paged->items(),
+            'total_pages' => $paged->lastPage()
+        ]);
     }
 
     public function store(Request $request)
