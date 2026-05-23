@@ -20,6 +20,29 @@ class ArrangementController extends Controller
             $query->where('destination', 'like', '%' . $request->destination . '%');
         }
 
+        if($request->filled('min_price')){
+            $query->where('price', '>=', $request->min_price);
+        }
+
+        if($request->filled('max_price')){
+            $query->where('price', '<=', $request->max_price);
+        }
+
+        if($request->filled('sort')){
+            if($request->sort == 'price_asc'){
+                $query->orderBy('price', 'asc');
+            }
+            if($request->sort == 'price_desc'){
+                $query->orderBy('price', 'desc');
+            }
+            if($request->sort == 'duration_asc'){
+                $query->orderBy('duration_days', 'asc');
+            }
+            if($request->sort == 'duration_desc'){
+                $query->orderBy('duration_days', 'desc');
+            }
+        }
+
         return response()->json($query->get());
     }
 
