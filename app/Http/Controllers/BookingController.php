@@ -122,4 +122,39 @@ class BookingController extends Controller
         ]);
     }
 
+    public function exportCsv(){
+        $bookings = Booking::with(['user', 'arrangement'])->get();
+        $filename = 'bookings.csv';
+
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => "attachment; filename=$filename"
+        ];
+
+        $callback = function () use ($bookings){
+            $file = fopen('php://output', 'w');
+
+            fputcsv($file, [
+                'ID',
+                'User',
+                'Arrangement',
+                'People',
+                'Total Price',
+                'Travel Date'
+            ]);
+
+            foreach($bookings as $booking){
+                fputcsv($file, [
+                    $booking->id,
+                    $booking->user->name ?? 'N/A',
+                    $booking->arrangement->title ?? 'N/A',
+                    $booking->number_of_people,
+                    $booking->total_price,
+                    $booking->travel_date,
+                ]);
+            }
+            fclose($file);
+        };
+        return response()->stream($callback, 200, $headers);
+    }
 }

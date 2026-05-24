@@ -21,6 +21,10 @@ Route::middleware('auth:sanctum')->group(function (){
 
     Route::put('/change-password', [AuthController::class, 'changePassword']);
     
+    Route::get('/arrangements/export/csv', [ArrangementController::class, 'exportCsv']);
+    Route::get('/bookings/export/csv', [BookingController::class, 'exportCsv'])
+        ->middleware('role:admin');
+
     Route::apiResource('arrangements', ArrangementController::class)
         ->only(['index', 'show']);
     Route::delete('/arrangements/{id}', [ArrangementController::class, 'destroy'])
@@ -44,5 +48,7 @@ Route::middleware('auth:sanctum')->group(function (){
     Route::apiResource('reviews', ReviewController::class)
         ->only(['store','update'])
         ->middleware('role:admin,manager');
+
+    
 });
 

@@ -147,4 +147,39 @@ class ArrangementController extends Controller
         ]);
 
     }
+
+    public function exportCsv(){
+        $arrangements = Arrangement::all();
+        $filename = 'arrangements.csv';
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => "attachment; filename=$filename",
+        ];
+        $callback = function () use ($arrangements){
+            $file = fopen('php://output', 'w');
+            fputcsv($file, [
+                'ID',
+                'Title',
+                'Destination',
+                'Price',
+                'Duration Days',
+                'Discount Percent',
+                'Last Minute'
+            ]);
+
+            foreach($arrangements as $arrangement){
+                fputcsv($file, [
+                    $arrangement->id,
+                    $arrangement->title,
+                    $arrangement->destination,
+                    $arrangement->price,
+                    $arrangement->duration_days,
+                    $arrangement->discount_percent,
+                    $arrangement->is_last_minute
+                ]);
+            }
+            fclose($file);
+        };
+        return response()->stream($callback,200,$headers);
+    }
 }
