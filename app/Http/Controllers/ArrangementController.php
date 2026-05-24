@@ -6,50 +6,58 @@ use Illuminate\Http\Request;
 use App\Models\Arrangement;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\ArrangementResource;
+use Illuminate\Support\Facades\Cache;
 
 class ArrangementController extends Controller
 {
     public function index(Request $request) 
     {
-        $query = Arrangement::query();
+        $cacheKey = 'arrangements_' . md5(json_encode($request->all()));
 
-        if ($request->filled('last_minute')) {
-            $query->where('is_last_minute', (int) $request->last_minute);
-        }
+        $result = Cache::remember($cacheKey, 60, function () use ($request) {
+            \Log::info('CACHE MISS - DB QUERY EXECUTED');
+        
+            $query = Arrangement::query();
 
-        if ($request->filled('destination')){
-            $query->where('destination', 'like', '%' . $request->destination . '%');
-        }
-
-        if($request->filled('min_price')){
-            $query->where('price', '>=', $request->min_price);
-        }
-
-        if($request->filled('max_price')){
-            $query->where('price', '<=', $request->max_price);
-        }
-
-        if($request->filled('sort')){
-            if($request->sort == 'price_asc'){
-                $query->orderBy('price', 'asc');
+            if ($request->filled('last_minute')) {
+                $query->where('is_last_minute', (int) $request->last_minute);
             }
-            if($request->sort == 'price_desc'){
-                $query->orderBy('price', 'desc');
-            }
-            if($request->sort == 'duration_asc'){
-                $query->orderBy('duration_days', 'asc');
-            }
-            if($request->sort == 'duration_desc'){
-                $query->orderBy('duration_days', 'desc');
-            }
-        }
 
-        $paged = $query->paginate(5);
-        return response()->json([
-            'current_page' =>$paged->currentPage(),
-            'data' => ArrangementResource::collection($paged->items()),
-            'total_pages' => $paged->lastPage()
-        ]);
+            if ($request->filled('destination')){
+                $query->where('destination', 'like', '%' . $request->destination . '%');
+            }
+
+            if($request->filled('min_price')){
+                $query->where('price', '>=', $request->min_price);
+            }
+
+            if($request->filled('max_price')){
+                $query->where('price', '<=', $request->max_price);
+            }
+
+            if($request->filled('sort')){
+                if($request->sort == 'price_asc'){
+                    $query->orderBy('price', 'asc');
+                }
+                if($request->sort == 'price_desc'){
+                    $query->orderBy('price', 'desc');
+                }
+                if($request->sort == 'duration_asc'){
+                    $query->orderBy('duration_days', 'asc');
+                }
+                if($request->sort == 'duration_desc'){
+                    $query->orderBy('duration_days', 'desc');
+                }
+            }
+
+            $paged = $query->paginate(5);
+            return [
+                'current_page' =>$paged->currentPage(),
+                'data' => ArrangementResource::collection($paged->items()),
+                'total_pages' => $paged->lastPage()
+            ];
+        });
+        return response()->json($result);
     }
 
     public function store(Request $request)
