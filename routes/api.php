@@ -6,11 +6,13 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\UserController;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
 Route::post('/reset-password', [AuthController::class, 'resetPassword']);
+Route::get('/weather', [ArrangementController::class, 'weather']);
 
 Route::middleware('auth:sanctum')->group(function (){
     Route::post('/logout', [AuthController::class, 'logout']);
@@ -49,6 +51,11 @@ Route::middleware('auth:sanctum')->group(function (){
         ->only(['store','update'])
         ->middleware('role:admin,manager');
 
-    
+    Route::get('/arrangements/{id}/weather', [ArrangementController::class, 'weatherByArrangement']);
+
+    Route::get('/users', [UserController::class, 'index'])
+        ->middleware('role:admin');
+    Route::put('/users/{id}/role', [UserController::class, 'changeRole'])
+        ->middleware('role:admin');
 });
 

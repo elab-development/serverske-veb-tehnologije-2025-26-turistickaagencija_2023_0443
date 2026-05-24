@@ -19,7 +19,7 @@ class ArrangementFactory extends Factory
     {
         return [
             'title' => $this->faker->randomElement(['Letovanje', 'Zimovanje', 'Putovanje', 'Leto za mlade']),
-            'destination' => $this->faker->randomElement(['Greece', 'Italy', 'Spain', 'Turkey']),
+            'destination' => $this->faker->randomElement(['Cairo', 'Rome', 'Istanbul', 'Athens']),
             'price' => $this->faker->randomElement([300,500,700,800,900,1000]),
             'duration_days' => $this->faker->numberBetween(3,14),
             'discount_percent' => $this->faker->randomElement([0,10,15,20]),

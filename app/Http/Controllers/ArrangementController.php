@@ -7,15 +7,17 @@ use App\Models\Arrangement;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\ArrangementResource;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Http;
 
 class ArrangementController extends Controller
 {
     public function index(Request $request) 
     {
-        $cacheKey = 'arrangements_' . md5(json_encode($request->all()));
+        $cacheKey = 'arrangements_cache' . md5(json_encode($request->all()));
 
         $result = Cache::remember($cacheKey, 60, function () use ($request) {
-            \Log::info('CACHE MISS - DB QUERY EXECUTED');
+            Log::info('CACHE MISS - DB QUERY EXECUTED');
         
             $query = Arrangement::query();
 
@@ -87,6 +89,7 @@ class ArrangementController extends Controller
             'discount_percent' => $request->discount_percent ?? 0,
             'is_last_minute' => $request->is_last_minute ?? false,
         ]);
+        Cache::forget('arrangements_cache');
         return response()->json($arrangement);
     }
 
@@ -136,6 +139,7 @@ class ArrangementController extends Controller
             'discount_percent' => $request->discount_percent ?? $arrangement->discount_percent,
             'is_last_minute' => $request->is_last_minute ?? $arrangement->is_last_minute,
         ]);
+        Cache::forget('arrangements_cache');
         return response()->json($arrangement);
     }
 
@@ -150,6 +154,7 @@ class ArrangementController extends Controller
         }
 
         $arrangement->delete();
+        Cache::forget('arrangements_cache');
         return response()->json([
             'message' => 'Arrangement deleted successfully'
         ]);
@@ -189,5 +194,81 @@ class ArrangementController extends Controller
             fclose($file);
         };
         return response()->stream($callback,200,$headers);
+    }
+
+    public function weather(Request $request){
+        $validator = Validator::make($request->all(), [
+            'destination' => 'required|string'
+        ]);
+
+        if($validator->fails()){
+            return response()->json([
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $destination = $request->destination;
+
+        $response = Http::get('https://api.openweathermap.org/data/2.5/weather', [
+            'q' => $destination,
+            'appid' => env('WEATHER_API_KEY'),
+            'units' => 'metric'
+        ]);
+
+        if($response->failed()){
+            return response()->json([
+                'message' => 'Weather data not available'
+            ], 500);
+        }
+
+        $data = $response->json();
+
+        return response()->json([
+            'destination' => $destination,
+            'temperature' => $data['main']['temp'],
+            'feels_like' => $data['main']['feels_like'],
+            'weather' => $data['weather'][0]['description'],
+            'humidity' => $data['main']['humidity']
+        ]);
+    }
+
+    public function weatherByArrangement($id){
+        $arrangement = Arrangement::find($id);
+
+        if(!$arrangement){
+            return response()->json([
+                'message' => 'Arrangement not found'
+            ],404);
+        }
+
+        $destination = $arrangement->destination;
+
+        $response = Http::get('https://api.openweathermap.org/data/2.5/weather', [
+            'q' => $destination,
+            'appid' => env('WEATHER_API_KEY'),
+            'units' => 'metric'
+        ]);
+
+        if($response->failed()){
+            return response()->json([
+                'message' => 'Weather data not available'
+            ], 500);
+        }
+
+        $data = $response->json();
+
+        return response()->json([
+            'arrangement' => [
+                'id' => $arrangement->id,
+                'title' => $arrangement->title,
+                'destination' => $arrangement->destination
+            ],
+            'weather' => [
+                'temperature' => $data['main']['temp'],
+                'feels_like' => $data['main']['feels_like'],
+                'weather' => $data['weather'][0]['description'],
+                'humidity' => $data['main']['humidity']
+            ]
+        ]);
     }
 }
