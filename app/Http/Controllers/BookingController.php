@@ -157,4 +157,10 @@ class BookingController extends Controller
         };
         return response()->stream($callback, 200, $headers);
     }
+
+    public function byArrangement($id)
+    {
+        $bookings = Booking::where('arrangement_id', $id)->get();
+        return response()->json($bookings);
+    }
 }

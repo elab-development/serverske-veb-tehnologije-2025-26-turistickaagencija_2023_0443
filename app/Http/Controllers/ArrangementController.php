@@ -24,15 +24,12 @@ class ArrangementController extends Controller
             if ($request->filled('last_minute')) {
                 $query->where('is_last_minute', (int) $request->last_minute);
             }
-
             if ($request->filled('destination')){
                 $query->where('destination', 'like', '%' . $request->destination . '%');
             }
-
             if($request->filled('min_price')){
                 $query->where('price', '>=', $request->min_price);
             }
-
             if($request->filled('max_price')){
                 $query->where('price', '<=', $request->max_price);
             }

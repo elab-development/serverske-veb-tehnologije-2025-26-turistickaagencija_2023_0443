@@ -110,4 +110,10 @@ class ReviewController extends Controller
             'message' => 'Review deleted successfully'
         ]);
     }
+
+    public function byArrangement($id)
+    {
+        $reviews = Review::where('arrangement_id', $id)->get();
+        return response()->json($reviews);
+    }
 }

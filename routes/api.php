@@ -42,6 +42,8 @@ Route::middleware('auth:sanctum')->group(function (){
     Route::apiResource('bookings', BookingController::class)
         ->only(['store','update'])
         ->middleware('role:admin,manager');
+    Route::get('/arrangements/{id}/bookings', [BookingController::class, 'byArrangement'])
+        ->middleware('role:admin,manager');
 
     Route::apiResource('reviews', ReviewController::class)
         ->only(['index', 'show']);
@@ -50,6 +52,7 @@ Route::middleware('auth:sanctum')->group(function (){
     Route::apiResource('reviews', ReviewController::class)
         ->only(['store','update'])
         ->middleware('role:admin,manager');
+    Route::get('/arrangements/{id}/reviews', [ReviewController::class, 'byArrangement']);
 
     Route::get('/arrangements/{id}/weather', [ArrangementController::class, 'weatherByArrangement']);
 
