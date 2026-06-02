@@ -92,13 +92,11 @@ class ArrangementController extends Controller
 
     public function show($id){
         $arrangement = Arrangement::find($id);
-
         if(!$arrangement){
             return response()->json([
                 'message' => 'Arrangement not found'
             ], 404);
         }
-
         return Arrangement::findOrFail($id);
     }
 
@@ -143,19 +141,16 @@ class ArrangementController extends Controller
     public function destroy($id)
     {
         $arrangement = Arrangement::find($id);
-
         if(!$arrangement){
             return response()->json([
                 'message' => 'Arrangement not found'
             ], 404);
         }
-
         $arrangement->delete();
         Cache::forget('arrangements_cache');
         return response()->json([
             'message' => 'Arrangement deleted successfully'
         ]);
-
     }
 
     public function exportCsv(){
