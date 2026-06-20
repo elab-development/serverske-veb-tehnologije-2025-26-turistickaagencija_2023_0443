@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Booking;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 use App\Http\Resources\BookingResource;
 
 class BookingController extends Controller
@@ -32,26 +33,40 @@ class BookingController extends Controller
             ], 422);
         };
 
-        $arrangement = \App\Models\Arrangement::findOrFail($request->arrangement_id);
+        DB::beginTransaction();
 
-        $totalPrice = $arrangement->price;
+        try{
+            $arrangement = \App\Models\Arrangement::findOrFail($request->arrangement_id);
 
-        if($arrangement->discount_percent > 0){
-            $totalPrice -= $totalPrice * ($arrangement->discount_percent / 100);
+            $totalPrice = $arrangement->price;
+
+            if($arrangement->discount_percent > 0){
+                $totalPrice -= $totalPrice * ($arrangement->discount_percent / 100);
+            }
+
+            $totalPrice *= $request->number_of_people;
+            $totalPrice = ceil($totalPrice);
+
+            $booking = Booking::create([
+                'user_id' => $request->user()->id,
+                'arrangement_id' => $request->arrangement_id,
+                'number_of_people' => $request->number_of_people,
+                'total_price' => $totalPrice,
+                'travel_date' => $request->travel_date
+            ]);
+
+            DB::commit();
+
+            return response()->json($booking);
         }
+        catch (\Exception $e){
+            DB::rollBack();
 
-        $totalPrice *= $request->number_of_people;
-        $totalPrice = ceil($totalPrice);
-
-        $booking = Booking::create([
-            'user_id' => $request->user()->id,
-            'arrangement_id' => $request->arrangement_id,
-            'number_of_people' => $request->number_of_people,
-            'total_price' => $totalPrice,
-            'travel_date' => $request->travel_date
-        ]);
-
-        return response()->json($booking);
+            return response()->json([
+                'message' => 'Booking failed',
+                'error' => $e->getMessage()
+            ],500);
+        };
     }
 
     public function show($id){
@@ -134,7 +149,7 @@ class BookingController extends Controller
                 'message' => 'Unauthorized'
             ],403);
         }
-        
+
         $booking->delete();
         return response()->json([
             'message' => 'Booking deleted successfully'
