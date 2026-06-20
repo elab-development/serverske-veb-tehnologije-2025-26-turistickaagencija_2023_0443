@@ -63,6 +63,13 @@ class BookingController extends Controller
             ], 404);
         }
 
+        // IDOR
+        if($booking->user_id !== request()->user()->id){
+            return response()->json([
+                'message' => 'Unauthorized'
+            ],403);
+        }
+
         return Booking::with(['user','arrangement'])->findOrFail($id);
     }
 
@@ -73,6 +80,12 @@ class BookingController extends Controller
             return response()->json([
                 'message' => 'Booking not found'
             ], 404);
+        }
+
+        if($booking->user_id !== request()->user()->id){
+            return response()->json([
+                'message' => 'Unauthorized'
+            ],403);
         }
 
         $validator = Validator::make($request->all(),[
@@ -116,6 +129,12 @@ class BookingController extends Controller
             ], 404);
         }
 
+        if($booking->user_id !== request()->user()->id){
+            return response()->json([
+                'message' => 'Unauthorized'
+            ],403);
+        }
+        
         $booking->delete();
         return response()->json([
             'message' => 'Booking deleted successfully'

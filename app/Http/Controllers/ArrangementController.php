@@ -191,7 +191,7 @@ class ArrangementController extends Controller
 
     public function weather(Request $request){
         $validator = Validator::make($request->all(), [
-            'destination' => 'required|string'
+            'destination' => 'required|string|alpha'
         ]);
 
         if($validator->fails()){

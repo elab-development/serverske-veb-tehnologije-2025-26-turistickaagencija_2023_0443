@@ -64,6 +64,12 @@ class ReviewController extends Controller
             ],404);
         }
 
+        if($review->user_id !== request()->user()->id){
+            return response()->json([
+                'message' => 'Unauthorized'
+            ],403);
+        }
+
         return Review::with(['user','arrangement'])->findOrFail($id);
     }
 
@@ -75,6 +81,12 @@ class ReviewController extends Controller
             return response()->json([
                 'message' => 'Review not found'
             ],404);
+        }
+        
+        if($review->user_id !== request()->user()->id){
+            return response()->json([
+                'message' => 'Unauthorized'
+            ],403);
         }
 
         $validator = Validator::make($request->all(),[
@@ -103,6 +115,12 @@ class ReviewController extends Controller
             return response()->json([
                 'message' => 'Review not found'
             ],404);
+        }
+
+        if($review->user_id !== request()->user()->id){
+            return response()->json([
+                'message' => 'Unauthorized'
+            ],403);
         }
 
         $review->delete();
