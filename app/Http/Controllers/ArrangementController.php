@@ -9,6 +9,7 @@ use App\Http\Resources\ArrangementResource;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\DB;
 
 class ArrangementController extends Controller
 {
@@ -355,5 +356,21 @@ class ArrangementController extends Controller
                 'population' => $cityData['population'] ?? null
             ]
         ]);
+    }
+
+    public function ratings(){
+        $data = DB::table('arrangements')
+            ->leftJoin('reviews', 'arrangements.id', '=', 'reviews.arrangement_id')
+            ->select(
+                'arrangements.id',
+                'arrangements.title',
+                DB::raw('COUNT(reviews.id) as total_reviews'),
+                DB::raw('ROUND(IFNULL(AVG(reviews.rating), 0), 2) as avg_rating')
+            )
+            ->groupBy('arrangements.id', 'arrangements.title')
+            ->orderByDesc('avg_rating')
+            ->get();
+
+        return response()->json($data);
     }
 }

@@ -27,6 +27,7 @@ Route::middleware('auth:sanctum')->group(function (){
     Route::get('/bookings/export/csv', [BookingController::class, 'exportCsv'])
         ->middleware('role:admin');
 
+    Route::get('/arrangements/ratings', [ArrangementController::class, 'ratings']);
     Route::apiResource('arrangements', ArrangementController::class)
         ->only(['index', 'show']);
     Route::delete('/arrangements/{id}', [ArrangementController::class, 'destroy'])
@@ -34,7 +35,7 @@ Route::middleware('auth:sanctum')->group(function (){
     Route::apiResource('arrangements', ArrangementController::class)
         ->only(['store','update'])
         ->middleware('role:admin,manager');
-
+    
     Route::apiResource('bookings', BookingController::class)
         ->only(['index', 'show']);
     Route::delete('/bookings/{id}', [BookingController::class, 'destroy'])
