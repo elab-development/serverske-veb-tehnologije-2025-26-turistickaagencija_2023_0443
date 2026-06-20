@@ -56,6 +56,9 @@ Route::middleware('auth:sanctum')->group(function (){
 
     Route::get('/arrangements/{id}/weather', [ArrangementController::class, 'weatherByArrangement']);
 
+    Route::get('/city-info', [ArrangementController::class, 'cityInfo']);
+    Route::get('/arrangements/{id}/city-info', [ArrangementController::class, 'cityInfoByArrangement']);
+
     Route::get('/users', [UserController::class, 'index'])
         ->middleware('role:admin');
     Route::put('/users/{id}/role', [UserController::class, 'changeRole'])

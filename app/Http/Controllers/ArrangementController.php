@@ -263,4 +263,97 @@ class ArrangementController extends Controller
             ]
         ]);
     }
+
+    public function cityInfo(Request $request){
+        $validator = Validator::make($request->all(), [
+            'city' => 'required|string'
+        ]);
+        
+        if($validator->fails()){
+            return response()->json([
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $city = $request->city;
+
+        $response = Http::get('https://geocoding-api.open-meteo.com/v1/search', [
+            'name' => $city,
+            'count' => 1,
+            'language' => 'en',
+            'format' => 'json'
+        ]);
+
+        if ($response->failed()){
+            return response()->json([
+                'message' => 'City data not available'
+            ], 500);
+        }
+        
+        $data = $response->json();
+
+        if(!isset($data['results'][0])){
+            return response()->json([
+                'message' => 'City not found'
+            ], 404);
+        }
+
+        $cityData = $data['results'][0];
+
+        return response()->json([
+            'city' => $cityData['name'] ?? null,
+            'country' => $cityData['country'] ?? null,
+            'region' => $cityData['admin1'] ?? null,
+            'population' => $cityData['population'] ?? null
+        ]);
+    }
+
+    public function cityInfoByArrangement($id){
+        $arrangement = Arrangement::find($id);
+
+        if(!$arrangement){
+            return response()->json([
+                'message' => 'Arrangement not found'
+            ],404);
+        }
+
+        $city = $arrangement->destination;
+
+        $response = Http::get('https://geocoding-api.open-meteo.com/v1/search', [
+            'name' => $city,
+            'count' => 1,
+            'language' => 'en',
+            'format' => 'json'
+        ]);
+
+        if($response->failed()){
+            return response()->json([
+                'message' => 'City data not available'
+            ], 500);
+        }
+
+        $data = $response->json();
+
+        if(!isset($data['results'][0])){
+            return response()->json([
+                'message' => 'City not found'
+            ], 404);
+        }
+
+        $cityData = $data['results'][0];
+
+        return response()->json([
+            'arrangement' => [
+                'id' => $arrangement->id,
+                'title' => $arrangement->title,
+                'destination' => $arrangement->destination
+            ],
+            'city_info' => [
+                'city' => $cityData['name'] ?? null,
+                'country' => $cityData['country'] ?? null,
+                'region' => $cityData['admin1'] ?? null,
+                'population' => $cityData['population'] ?? null
+            ]
+        ]);
+    }
 }
