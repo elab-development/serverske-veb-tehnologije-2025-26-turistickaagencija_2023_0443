@@ -31,7 +31,7 @@ Backend REST API aplikacija za turističku agenciju razvijena u Laravel framewor
 ### Instalacija
 
 1. Klonirati repozitorijum
-git clone https://github.com/M4TEJ4/STEH_turisticka_agencija.git
+git clone [https://github.com/M4TEJ4/STEH_turisticka_agencija.git](https://github.com/elab-development/serverske-veb-tehnologije-2025-26-turistickaagencija_2023_0443.git)
 
 2. Instalirati zavisnosti
 composer install
