@@ -771,6 +771,274 @@
                     }
                 }
             }
+        },
+        "/api/bookings": {
+            "get": {
+                "tags": [
+                    "Rezervacije"
+                ],
+                "summary": "Lista svih rezervacija",
+                "description": "Vraca paginiranu listu rezervacija sa podacima o korisniku i aranzmanu.",
+                "operationId": "eb7c332e8ba161904a1c0071040f61a5",
+                "responses": {
+                    "200": {
+                        "description": "Uspesno vracena lista rezervacija"
+                    },
+                    "401": {
+                        "description": "Neautorizovan pristup"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Rezervacije"
+                ],
+                "summary": "Kreiranje rezervacije",
+                "description": "Kreira novu rezervaciju za ulogovanog korisnika. Cena se automatski racuna na osnovu aranzmana i broja osoba.",
+                "operationId": "e33fa5a6507581f9b1e0d710a9a130d1",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "arrangement_id",
+                                    "number_of_people",
+                                    "travel_date"
+                                ],
+                                "properties": {
+                                    "arrangement_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "number_of_people": {
+                                        "type": "integer",
+                                        "example": 2
+                                    },
+                                    "travel_date": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2026-08-15"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Rezervacija uspesno kreirana"
+                    },
+                    "422": {
+                        "description": "Greska validacije"
+                    },
+                    "500": {
+                        "description": "Greska pri kreiranju rezervacije"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/bookings/{id}": {
+            "get": {
+                "tags": [
+                    "Rezervacije"
+                ],
+                "summary": "Prikaz jedne rezervacije",
+                "description": "Vraca detalje rezervacije. Korisnik moze videti samo svoje rezervacije.",
+                "operationId": "ccb98678c3ca3c9e74460dbddc427ab0",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": 1
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Uspesno vracena rezervacija"
+                    },
+                    "403": {
+                        "description": "Nemate pristup ovoj rezervaciji"
+                    },
+                    "404": {
+                        "description": "Rezervacija nije pronadjena"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Rezervacije"
+                ],
+                "summary": "Izmena rezervacije",
+                "description": "Menja podatke rezervacije. Korisnik moze menjati samo svoje rezervacije.",
+                "operationId": "fb300db4391c22f2232e2814d49641c7",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": 1
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "arrangement_id": {
+                                        "type": "integer",
+                                        "example": 2
+                                    },
+                                    "number_of_people": {
+                                        "type": "integer",
+                                        "example": 3
+                                    },
+                                    "travel_date": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2026-09-01"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Rezervacija uspesno izmenjena"
+                    },
+                    "403": {
+                        "description": "Nemate pristup ovoj rezervaciji"
+                    },
+                    "404": {
+                        "description": "Rezervacija nije pronadjena"
+                    },
+                    "422": {
+                        "description": "Greska validacije"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Rezervacije"
+                ],
+                "summary": "Brisanje rezervacije",
+                "description": "Brise rezervaciju. Korisnik moze brisati samo svoje rezervacije.",
+                "operationId": "9f51d8752d2471c30540b89c13e933df",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": 1
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Rezervacija uspesno obrisana"
+                    },
+                    "403": {
+                        "description": "Nemate pristup ovoj rezervaciji"
+                    },
+                    "404": {
+                        "description": "Rezervacija nije pronadjena"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/bookings/export/csv": {
+            "get": {
+                "tags": [
+                    "Rezervacije"
+                ],
+                "summary": "Eksport rezervacija u CSV",
+                "description": "Preuzima sve rezervacije u CSV formatu. Dostupno samo administratorima.",
+                "operationId": "7a1ad09bdfac0e894acbd7752e071b12",
+                "responses": {
+                    "200": {
+                        "description": "CSV fajl uspesno generisan"
+                    },
+                    "401": {
+                        "description": "Neautorizovan pristup"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/arrangements/{id}/bookings": {
+            "get": {
+                "tags": [
+                    "Rezervacije"
+                ],
+                "summary": "Rezervacije za aranzman",
+                "description": "Vraca sve rezervacije za odredjeni aranzman. Dostupno administratorima i menadzeru.",
+                "operationId": "49bc63c839953d2cfe1928e696697f90",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": 1
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Uspesno vracene rezervacije"
+                    },
+                    "401": {
+                        "description": "Neautorizovan pristup"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
         }
     },
     "tags": [
@@ -789,6 +1057,10 @@
         {
             "name": "Autentifikacija",
             "description": "Autentifikacija"
+        },
+        {
+            "name": "Rezervacije",
+            "description": "Rezervacije"
         }
     ]
 }
