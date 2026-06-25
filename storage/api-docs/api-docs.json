@@ -12,6 +12,473 @@
         }
     ],
     "paths": {
+        "/api/arrangements": {
+            "get": {
+                "tags": [
+                    "Aranzmani"
+                ],
+                "summary": "Lista svih aranzmana",
+                "description": "Vraca paginiranu listu aranzmana sa opcionalnim filterima i sortiranjem.",
+                "operationId": "07211e7786b083cde77c8e80cc2594b8",
+                "parameters": [
+                    {
+                        "name": "destination",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "Greece"
+                    },
+                    {
+                        "name": "last_minute",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "enum": [
+                                0,
+                                1
+                            ]
+                        },
+                        "example": 1
+                    },
+                    {
+                        "name": "min_price",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "number"
+                        },
+                        "example": 100
+                    },
+                    {
+                        "name": "max_price",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "number"
+                        },
+                        "example": 1000
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "price_asc",
+                                "price_desc",
+                                "duration_asc",
+                                "duration_desc"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Uspesno vracena lista aranzmana"
+                    },
+                    "401": {
+                        "description": "Neautorizovan pristup"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Aranzmani"
+                ],
+                "summary": "Kreiranje novog aranzmana",
+                "description": "Kreira novi turisticki aranzman. Dostupno samo administratorima i menadzeru.",
+                "operationId": "bef7f98f1d13c3210e98bc5bf60d32ee",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "title",
+                                    "destination",
+                                    "price",
+                                    "duration_days"
+                                ],
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "example": "Letovanje u Grckoj"
+                                    },
+                                    "destination": {
+                                        "type": "string",
+                                        "example": "Greece"
+                                    },
+                                    "price": {
+                                        "type": "number",
+                                        "example": 499.99
+                                    },
+                                    "duration_days": {
+                                        "type": "integer",
+                                        "example": 7
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Predivno letovanje"
+                                    },
+                                    "discount_percent": {
+                                        "type": "integer",
+                                        "example": 10
+                                    },
+                                    "is_last_minute": {
+                                        "type": "integer",
+                                        "example": 0,
+                                        "enum": [
+                                            0,
+                                            1
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Aranzman uspesno kreiran"
+                    },
+                    "422": {
+                        "description": "Greska validacije"
+                    },
+                    "401": {
+                        "description": "Neautorizovan pristup"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/arrangements/{id}": {
+            "get": {
+                "tags": [
+                    "Aranzmani"
+                ],
+                "summary": "Prikaz jednog aranzmana",
+                "description": "Vraca detalje aranzmana na osnovu ID-a.",
+                "operationId": "3a9725b8b8bbc086bd903057336a00f9",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": 1
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Uspesno vrácen aranzman"
+                    },
+                    "404": {
+                        "description": "Aranzman nije pronadjen"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Aranzmani"
+                ],
+                "summary": "Izmena aranzmana",
+                "description": "Menja podatke postojeceg aranzmana. Dostupno samo administratorima i menadzeru.",
+                "operationId": "32224ab0d6d63647549d20ecfb7ad8fe",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": 1
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "example": "Novo ime aranzmana"
+                                    },
+                                    "price": {
+                                        "type": "number",
+                                        "example": 599.99
+                                    },
+                                    "discount_percent": {
+                                        "type": "integer",
+                                        "example": 15
+                                    },
+                                    "is_last_minute": {
+                                        "type": "boolean",
+                                        "example": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Aranzman uspesno izmenjen"
+                    },
+                    "404": {
+                        "description": "Aranzman nije pronadjen"
+                    },
+                    "422": {
+                        "description": "Greska validacije"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Aranzmani"
+                ],
+                "summary": "Brisanje aranzmana",
+                "description": "Brise aranzman na osnovu ID-a. Dostupno samo administratorima.",
+                "operationId": "75b454a1ccbc48c7b59e345433dca03b",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": 1
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Aranzman uspesno obrisan"
+                    },
+                    "404": {
+                        "description": "Aranzman nije pronadjen"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/arrangements/export/csv": {
+            "get": {
+                "tags": [
+                    "Aranzmani"
+                ],
+                "summary": "Eksport aranzmana u CSV",
+                "description": "Preuzima sve aranzmane u CSV formatu.",
+                "operationId": "b05fdb9ad1821656c0d145ae32eaac3b",
+                "responses": {
+                    "200": {
+                        "description": "CSV fajl uspesno generisan"
+                    },
+                    "401": {
+                        "description": "Neautorizovan pristup"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/weather": {
+            "get": {
+                "tags": [
+                    "Vreme"
+                ],
+                "summary": "Vremenski uslovi po destinaciji",
+                "description": "Vraca trenutne vremenske uslove za unetu destinaciju koristeci OpenWeatherMap API.",
+                "operationId": "7c6f068e6e538302551f06c9c031e561",
+                "parameters": [
+                    {
+                        "name": "destination",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "Belgrade"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Uspesno vraceni vremenski podaci"
+                    },
+                    "422": {
+                        "description": "Greska validacije"
+                    },
+                    "500": {
+                        "description": "Vremenski podaci nisu dostupni"
+                    }
+                }
+            }
+        },
+        "/api/arrangements/{id}/weather": {
+            "get": {
+                "tags": [
+                    "Vreme"
+                ],
+                "summary": "Vremenski uslovi za destinaciju aranzmana",
+                "description": "Vraca trenutne vremenske uslove za destinaciju konkretnog aranzmana.",
+                "operationId": "2bc626fc12517ff310c637d6fe383b28",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": 1
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Uspesno vraceni vremenski podaci"
+                    },
+                    "404": {
+                        "description": "Aranzman nije pronadjen"
+                    },
+                    "500": {
+                        "description": "Vremenski podaci nisu dostupni"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/city-info": {
+            "get": {
+                "tags": [
+                    "Grad"
+                ],
+                "summary": "Informacije o gradu",
+                "description": "Vraca geografske informacije o gradu koristeci Open-Meteo Geocoding API.",
+                "operationId": "09d10884658661bd0fc4e024ef7e749e",
+                "parameters": [
+                    {
+                        "name": "city",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "Belgrade"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Uspesno vraceni podaci o gradu"
+                    },
+                    "404": {
+                        "description": "Grad nije pronadjen"
+                    },
+                    "422": {
+                        "description": "Greska validacije"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/arrangements/{id}/city-info": {
+            "get": {
+                "tags": [
+                    "Grad"
+                ],
+                "summary": "Informacije o gradu aranzmana",
+                "description": "Vraca geografske informacije o destinaciji konkretnog aranzmana.",
+                "operationId": "0a7ba021aa952dab3afaec46b91725e8",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": 1
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Uspesno vraceni podaci o gradu"
+                    },
+                    "404": {
+                        "description": "Aranzman ili grad nisu pronadjeni"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/arrangements/ratings": {
+            "get": {
+                "tags": [
+                    "Aranzmani"
+                ],
+                "summary": "Ocene aranzmana",
+                "description": "Vraca listu svih aranzmana sa prosecnom ocenom i brojem recenzija, sortiranu po oceni.",
+                "operationId": "e75b85765970aa236d38ae670b9be805",
+                "responses": {
+                    "200": {
+                        "description": "Uspesno vracene ocene"
+                    },
+                    "401": {
+                        "description": "Neautorizovan pristup"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/register": {
             "post": {
                 "tags": [
@@ -307,6 +774,18 @@
         }
     },
     "tags": [
+        {
+            "name": "Aranzmani",
+            "description": "Aranzmani"
+        },
+        {
+            "name": "Vreme",
+            "description": "Vreme"
+        },
+        {
+            "name": "Grad",
+            "description": "Grad"
+        },
         {
             "name": "Autentifikacija",
             "description": "Autentifikacija"
