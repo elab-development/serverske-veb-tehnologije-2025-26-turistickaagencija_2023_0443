@@ -1281,6 +1281,96 @@
                     }
                 ]
             }
+        },
+        "/api/users": {
+            "get": {
+                "tags": [
+                    "Korisnici"
+                ],
+                "summary": "Lista svih korisnika",
+                "description": "Vraca paginiranu listu korisnika. Dostupno samo administratorima.",
+                "operationId": "c457726701591d1183b53aa71fc13441",
+                "responses": {
+                    "200": {
+                        "description": "Uspesno vracena lista korisnika"
+                    },
+                    "401": {
+                        "description": "Neautorizovan pristup"
+                    },
+                    "403": {
+                        "description": "Nemate dozvolu"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/users/{id}/role": {
+            "put": {
+                "tags": [
+                    "Korisnici"
+                ],
+                "summary": "Promena uloge korisnika",
+                "description": "Menja ulogu korisnika. Dostupno samo administratorima. Administrator ne moze menjati svoju ulogu.",
+                "operationId": "18f30e9e1250e0c82db1f636147aee1a",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": 1
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "role"
+                                ],
+                                "properties": {
+                                    "role": {
+                                        "type": "string",
+                                        "example": "manager",
+                                        "enum": [
+                                            "admin",
+                                            "manager",
+                                            "user"
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Uloga uspesno promenjena"
+                    },
+                    "403": {
+                        "description": "Nemate dozvolu ili pokusavate da promenite svoju ulogu"
+                    },
+                    "404": {
+                        "description": "Korisnik nije pronadjen"
+                    },
+                    "422": {
+                        "description": "Greska validacije"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
         }
     },
     "tags": [
@@ -1307,6 +1397,10 @@
         {
             "name": "Recenzije",
             "description": "Recenzije"
+        },
+        {
+            "name": "Korisnici",
+            "description": "Korisnici"
         }
     ]
 }
