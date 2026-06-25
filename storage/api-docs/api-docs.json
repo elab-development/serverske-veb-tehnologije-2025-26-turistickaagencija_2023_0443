@@ -1039,6 +1039,248 @@
                     }
                 ]
             }
+        },
+        "/api/reviews": {
+            "get": {
+                "tags": [
+                    "Recenzije"
+                ],
+                "summary": "Lista svih recenzija",
+                "description": "Vraca paginiranu listu recenzija sa podacima o korisniku i aranzmanu.",
+                "operationId": "346169ce6ab0c633530a7cedc1a25fab",
+                "responses": {
+                    "200": {
+                        "description": "Uspesno vracena lista recenzija"
+                    },
+                    "401": {
+                        "description": "Neautorizovan pristup"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Recenzije"
+                ],
+                "summary": "Kreiranje recenzije",
+                "description": "Kreira novu recenziju za aranzman. Korisnik moze ostaviti samo jednu recenziju po aranzmanu.",
+                "operationId": "154c71f5f72b459d998f5ea451bd4c96",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "arrangement_id",
+                                    "rating"
+                                ],
+                                "properties": {
+                                    "arrangement_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "rating": {
+                                        "type": "integer",
+                                        "example": 4,
+                                        "maximum": 5,
+                                        "minimum": 1
+                                    },
+                                    "comment": {
+                                        "type": "string",
+                                        "example": "Odlicno putovanje!"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Recenzija uspesno kreirana"
+                    },
+                    "409": {
+                        "description": "Vec ste ostavili recenziju za ovaj aranzman"
+                    },
+                    "422": {
+                        "description": "Greska validacije"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/reviews/{id}": {
+            "get": {
+                "tags": [
+                    "Recenzije"
+                ],
+                "summary": "Prikaz jedne recenzije",
+                "description": "Vraca detalje recenzije. Korisnik moze videti samo svoje recenzije.",
+                "operationId": "a9949d3a965ed93ae30547c07eef7505",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": 1
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Uspesno vracena recenzija"
+                    },
+                    "403": {
+                        "description": "Nemate pristup ovoj recenziji"
+                    },
+                    "404": {
+                        "description": "Recenzija nije pronadjena"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Recenzije"
+                ],
+                "summary": "Izmena recenzije",
+                "description": "Menja podatke recenzije. Korisnik moze menjati samo svoje recenzije.",
+                "operationId": "17776becb9faf054b5c49bc83ad6c974",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": 1
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "rating": {
+                                        "type": "integer",
+                                        "example": 5,
+                                        "maximum": 5,
+                                        "minimum": 1
+                                    },
+                                    "comment": {
+                                        "type": "string",
+                                        "example": "Izmenjen komentar"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Recenzija uspesno izmenjena"
+                    },
+                    "403": {
+                        "description": "Nemate pristup ovoj recenziji"
+                    },
+                    "404": {
+                        "description": "Recenzija nije pronadjena"
+                    },
+                    "422": {
+                        "description": "Greska validacije"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Recenzije"
+                ],
+                "summary": "Brisanje recenzije",
+                "description": "Brise recenziju. Korisnik moze brisati samo svoje recenzije.",
+                "operationId": "89986343b5dbd2b909c2764aeb7e4096",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": 1
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Recenzija uspesno obrisana"
+                    },
+                    "403": {
+                        "description": "Nemate pristup ovoj recenziji"
+                    },
+                    "404": {
+                        "description": "Recenzija nije pronadjena"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/arrangements/{id}/reviews": {
+            "get": {
+                "tags": [
+                    "Recenzije"
+                ],
+                "summary": "Recenzije za aranzman",
+                "description": "Vraca sve recenzije za odredjeni aranzman.",
+                "operationId": "5067b48053b061cc6f29cf5c6cb7f3c0",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": 1
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Uspesno vracene recenzije"
+                    },
+                    "401": {
+                        "description": "Neautorizovan pristup"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
         }
     },
     "tags": [
@@ -1061,6 +1303,10 @@
         {
             "name": "Rezervacije",
             "description": "Rezervacije"
+        },
+        {
+            "name": "Recenzije",
+            "description": "Recenzije"
         }
     ]
 }
